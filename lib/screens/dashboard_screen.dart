@@ -12,7 +12,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Dummy data for demonstration
   final String studentName = "John Doe";
   final String studentNumber = "219123456";
-  final String course = "National Diploma: Information Technology";
+  final String course = "Doctor of Philosophy in Computer Science";
   final List<String> announcements = [
     "Registration for 2024 academic year is now open",
     "Exam results will be released on 15 December 2023",
@@ -20,6 +20,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
     "Student card collection available at student affairs"
   ];
   final double outstandingFees = 15420.50;
+  final List<Map<String, String>> completedQualifications = [
+    {
+      'title': 'NDIP',
+      'name': 'National Diploma in Computer Systems Engineering'
+    },
+    {
+      'title': 'BTECH',
+      'name': 'Bachelor of Technology in Computer Systems'
+    },
+    {
+      'title': 'PGDIP',
+      'name': 'Postgraduate Diploma in Computer Science'
+    },
+    {
+      'title': 'MSC',
+      'name': 'Master of Science in Computer Science'
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Course Information Card
+            // Profile and Course Information Card
             Container(
               width: double.infinity,
               margin: const EdgeInsets.all(16),
@@ -53,32 +71,158 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ],
               ),
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    studentName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  // Left side: Profile Picture and Info
+                  Expanded(
+                    flex: 3,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Profile Picture
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 3,
+                            ),
+                            image: const DecorationImage(
+                              image: NetworkImage(
+                                'https://ui-avatars.com/api/?name=John+Doe&background=random',
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        // Student Information
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                studentName,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                studentNumber,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 15),
+                              Text(
+                                course,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    studentNumber,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
+                  
+                  // Vertical Divider
+                  Container(
+                    height: 150,
+                    width: 1,
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    color: Colors.white.withOpacity(0.3),
                   ),
-                  const SizedBox(height: 15),
-                  Text(
-                    course,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+
+                  // Right side: Academic Achievements
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.school,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Academic Achievements',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: completedQualifications.map((qual) {
+                              return Tooltip(
+                                message: qual['name']!,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.school,
+                                        size: 16,
+                                        color: Color(0xFF005496),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        qual['title']!,
+                                        style: const TextStyle(
+                                          color: Color(0xFF005496),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
