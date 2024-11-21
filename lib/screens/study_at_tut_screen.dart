@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'forgot_pin_screen.dart';
+import 'login_screen.dart';
+import 'register_screen.dart';
 
 class StudyAtTutScreen extends StatelessWidget {
   const StudyAtTutScreen({super.key});
@@ -34,7 +36,10 @@ class StudyAtTutScreen extends StatelessWidget {
                   icon: Icons.login,
                   label: 'Login',
                   onPressed: () {
-                    // Navigate to Login Screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    );
                   },
                 ),
                 const SizedBox(height: 20),
@@ -43,7 +48,10 @@ class StudyAtTutScreen extends StatelessWidget {
                   icon: Icons.app_registration,
                   label: 'Register',
                   onPressed: () {
-                    // Navigate to Register Screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    );
                   },
                 ),
                 const SizedBox(height: 20),

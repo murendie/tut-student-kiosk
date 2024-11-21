@@ -28,7 +28,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _handleRegister() {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implement registration logic
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+
+      // Simulate network delay
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pop(context); // Remove loading indicator
+        
+        // Show success dialog
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Registration Successful'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Welcome, ${_studentNumberController.text}!'),
+                  const SizedBox(height: 8),
+                  const Text('Your account has been created successfully. You can now login with your student number and PIN.'),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.pop(context); // Close dialog
+                    Navigator.pop(context); // Return to previous screen
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      });
     }
   }
 
