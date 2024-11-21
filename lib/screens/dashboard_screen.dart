@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
+import 'splash_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -43,9 +44,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Student Dashboard'),
         backgroundColor: const Color(0xFF005496),
-        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            Image.asset(
+              'images/logo_top.png',
+              height: 40,
+            ),
+            const SizedBox(width: 16),
+            const Text(
+              'Dashboard',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Spacer(),
+            IconButton(
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.white,
+              ),
+              tooltip: 'Logout',
+              onPressed: () => _showLogoutDialog(context),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -284,7 +317,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             // Quick Links Grid
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -293,47 +326,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF424242),
+                      color: Color(0xFF005496),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1.5,
-                    children: [
-                      _buildQuickLinkCard(
-                        'Outstanding Fees',
-                        'R ${outstandingFees.toStringAsFixed(2)}',
-                        Icons.account_balance_wallet,
-                        const Color(0xFFE57373),
-                        () {},
-                      ),
-                      _buildQuickLinkCard(
-                        'Exam Timetable',
-                        'View Schedule',
-                        Icons.calendar_today,
-                        const Color(0xFF81C784),
-                        () {},
-                      ),
-                      _buildQuickLinkCard(
-                        'Student Card',
-                        'Order/Replace',
-                        Icons.credit_card,
-                        const Color(0xFF64B5F6),
-                        () {},
-                      ),
-                      _buildQuickLinkCard(
-                        'Academic Record',
-                        'View Grades',
-                        Icons.school,
-                        const Color(0xFFBA68C8),
-                        () {},
-                      ),
-                    ],
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: constraints.maxWidth > 600 ? 4 : 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 1.2,
+                        children: [
+                          _buildQuickLinkCard(
+                            'Outstanding Fees',
+                            'View and pay your fees',
+                            Icons.account_balance_wallet,
+                            Colors.orange,
+                            () {},
+                          ),
+                          _buildQuickLinkCard(
+                            'Exam Timetable',
+                            'Check your exam schedule',
+                            Icons.calendar_today,
+                            Colors.green,
+                            () {},
+                          ),
+                          _buildQuickLinkCard(
+                            'Student Card',
+                            'Order your student card',
+                            Icons.credit_card,
+                            Colors.purple,
+                            () {},
+                          ),
+                          _buildQuickLinkCard(
+                            'Academic Record',
+                            'View your results',
+                            Icons.school,
+                            Colors.blue,
+                            () {},
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -380,6 +417,63 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Row(
+            children: [
+              Icon(
+                Icons.logout,
+                color: Color(0xFF005496),
+              ),
+              SizedBox(width: 10),
+              Text('Logout'),
+            ],
+          ),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                // Navigate to splash screen and remove all previous routes
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SplashScreen(),
+                  ),
+                  (route) => false,
+                );
+              },
+              child: const Text(
+                'Logout',
+                style: TextStyle(
+                  color: Color(0xFF005496),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
