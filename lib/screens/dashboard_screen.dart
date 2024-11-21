@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 import 'splash_screen.dart';
+import 'academic_calendar_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -387,22 +388,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF424242),
+                      color: Color(0xFF005496),
                     ),
                   ),
                   const SizedBox(height: 16),
+                  _buildInfoCard(
+                    'Academic Calendar',
+                    'Important dates and events',
+                    Icons.calendar_today,
+                    const Color(0xFF7986CB),
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AcademicCalendarScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
                   _buildInfoCard(
                     'Registration Statement',
                     'View and download your registration statement',
                     Icons.description,
                     const Color(0xFF7986CB),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInfoCard(
-                    'Academic Calendar',
-                    'Important dates and deadlines',
-                    Icons.event_note,
-                    const Color(0xFF4DB6AC),
+                    () {
+                      // TODO: Implement registration statement functionality
+                    },
                   ),
                   const SizedBox(height: 12),
                   _buildInfoCard(
@@ -410,6 +422,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     'Find your way around campus',
                     Icons.map,
                     const Color(0xFFFFB74D),
+                    () {
+                      // TODO: Implement campus map functionality
+                    },
                   ),
                 ],
               ),
@@ -523,7 +538,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildInfoCard(
-      String title, String description, IconData icon, Color color) {
+      String title, String description, IconData icon, Color color, VoidCallback onTap) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -545,7 +560,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         subtitle: Text(description),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () {},
+        onTap: onTap,
       ),
     );
   }
