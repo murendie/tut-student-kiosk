@@ -67,8 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: const Text('Login'),
         backgroundColor: const Color(0xFF005496),
+        foregroundColor: Colors.white,
       ),
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFFe0f7fa), Color(0xFF80deea)],

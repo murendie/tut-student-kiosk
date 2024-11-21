@@ -80,8 +80,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         title: const Text('Register'),
         backgroundColor: const Color(0xFF005496),
+        foregroundColor: Colors.white,
       ),
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFFe0f7fa), Color(0xFF80deea)],
