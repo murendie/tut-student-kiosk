@@ -4,6 +4,7 @@ import '../widgets/grid_item.dart';
 import '../widgets/top_bar.dart';
 import '../widgets/animated_text.dart';
 import '../widgets/inactivity_dialog.dart';
+import 'chat_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -160,15 +161,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showSelection(BuildContext context, String label) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('You selected $label'),
-        backgroundColor: const Color(0xFF005496),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+    if (label == 'EduBot') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ChatScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('You selected $label'),
+          backgroundColor: const Color(0xFF005496),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 }
