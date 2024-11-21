@@ -6,10 +6,11 @@ import '../widgets/animated_text.dart';
 import '../widgets/inactivity_dialog.dart';
 import 'chat_screen.dart';
 import 'dashboard_screen.dart';
-import 'identity_checkpoint_screen.dart'; // Import the new screen
+import 'splash_screen.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String studentNumber;
+  const HomePage({super.key, this.studentNumber = "219123456"}); // Default value for demo
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -66,6 +67,57 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F9FF),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF005496),
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            Image.asset(
+              'images/logo_top.png',
+              height: 40,
+            ),
+            const Spacer(),
+            // Profile Section
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      Icons.person,
+                      color: Color(0xFF005496),
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.studentNumber,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            // Logout Button
+            IconButton(
+              icon: const Icon(Icons.logout),
+              color: Colors.white,
+              tooltip: 'Logout',
+              onPressed: () => _showLogoutDialog(context),
+            ),
+          ],
+        ),
+      ),
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTapDown: _handleUserInteraction,
@@ -74,7 +126,6 @@ class _HomePageState extends State<HomePage> {
         onPanUpdate: _handleUserInteraction,
         child: Column(
           children: [
-            const TopBar(),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -186,5 +237,62 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     }
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Row(
+            children: [
+              Icon(
+                Icons.logout,
+                color: Color(0xFF005496),
+              ),
+              SizedBox(width: 10),
+              Text('Logout'),
+            ],
+          ),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                // Navigate to splash screen and remove all previous routes
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SplashScreen(),
+                  ),
+                  (route) => false,
+                );
+              },
+              child: const Text(
+                'Logout',
+                style: TextStyle(
+                  color: Color(0xFF005496),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
