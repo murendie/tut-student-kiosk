@@ -1,0 +1,314 @@
+import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  // Dummy data for demonstration
+  final String studentName = "John Doe";
+  final String studentNumber = "219123456";
+  final String course = "National Diploma: Information Technology";
+  final List<String> announcements = [
+    "Registration for 2024 academic year is now open",
+    "Exam results will be released on 15 December 2023",
+    "Library operating hours extended during exam period",
+    "Student card collection available at student affairs"
+  ];
+  final double outstandingFees = 15420.50;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Student Dashboard'),
+        backgroundColor: const Color(0xFF005496),
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Course Information Card
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF005496), Color(0xFF0277BD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    studentName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    studentNumber,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Text(
+                    course,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // News Ticker
+            Container(
+              height: 50,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF3E0),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFFFB74D)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFFB74D),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(9),
+                        bottomLeft: Radius.circular(9),
+                      ),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'NEWS',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Marquee(
+                      text: announcements.join(' • '),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF424242),
+                      ),
+                      scrollAxis: Axis.horizontal,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      blankSpace: 20.0,
+                      velocity: 50.0,
+                      pauseAfterRound: const Duration(seconds: 1),
+                      startPadding: 10.0,
+                      accelerationDuration: const Duration(seconds: 1),
+                      accelerationCurve: Curves.linear,
+                      decelerationDuration: const Duration(milliseconds: 500),
+                      decelerationCurve: Curves.easeOut,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Quick Links Grid
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Quick Links',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF424242),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 1.5,
+                    children: [
+                      _buildQuickLinkCard(
+                        'Outstanding Fees',
+                        'R ${outstandingFees.toStringAsFixed(2)}',
+                        Icons.account_balance_wallet,
+                        const Color(0xFFE57373),
+                        () {},
+                      ),
+                      _buildQuickLinkCard(
+                        'Exam Timetable',
+                        'View Schedule',
+                        Icons.calendar_today,
+                        const Color(0xFF81C784),
+                        () {},
+                      ),
+                      _buildQuickLinkCard(
+                        'Student Card',
+                        'Order/Replace',
+                        Icons.credit_card,
+                        const Color(0xFF64B5F6),
+                        () {},
+                      ),
+                      _buildQuickLinkCard(
+                        'Academic Record',
+                        'View Grades',
+                        Icons.school,
+                        const Color(0xFFBA68C8),
+                        () {},
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Additional Information Section
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Important Information',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF424242),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildInfoCard(
+                    'Registration Statement',
+                    'View and download your registration statement',
+                    Icons.description,
+                    const Color(0xFF7986CB),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInfoCard(
+                    'Academic Calendar',
+                    'Important dates and deadlines',
+                    Icons.event_note,
+                    const Color(0xFF4DB6AC),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInfoCard(
+                    'Campus Map',
+                    'Find your way around campus',
+                    Icons.map,
+                    const Color(0xFFFFB74D),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickLinkCard(String title, String subtitle, IconData icon,
+      Color color, VoidCallback onTap) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(15),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 32,
+                color: color,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(
+      String title, String description, IconData icon, Color color) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(0.1),
+          child: Icon(
+            icon,
+            color: color,
+          ),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(description),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () {},
+      ),
+    );
+  }
+}

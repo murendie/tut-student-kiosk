@@ -5,6 +5,7 @@ import '../widgets/top_bar.dart';
 import '../widgets/animated_text.dart';
 import '../widgets/inactivity_dialog.dart';
 import 'chat_screen.dart';
+import 'dashboard_screen.dart';
 import 'identity_checkpoint_screen.dart'; // Import the new screen
 
 class HomePage extends StatefulWidget {
@@ -121,16 +122,16 @@ class _HomePageState extends State<HomePage> {
                                 shrinkWrap: true,
                                 children: [
                                   GridItem(
+                                    icon: Icons.dashboard,
+                                    color: const Color(0xFFE41936),
+                                    label: 'Dashboard',
+                                    onTap: () => _showSelection(context, 'Dashboard'),
+                                  ),
+                                  GridItem(
                                     icon: Icons.smart_toy,
                                     color: const Color(0xFFF9BC0A),
                                     label: 'EduBot',
                                     onTap: () => _showSelection(context, 'EduBot'),
-                                  ),
-                                  GridItem(
-                                    icon: Icons.person_add,
-                                    color: const Color(0xFFE41936),
-                                    label: 'Study@TUT',
-                                    onTap: () => _showSelection(context, 'Study@TUT'),
                                   ),
                                   GridItem(
                                     icon: Icons.payment,
@@ -162,21 +163,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showSelection(BuildContext context, String label) {
-    if (label == 'EduBot') {
+    if (label == 'Dashboard') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+      );
+    } else if (label == 'EduBot') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ChatScreen()),
       );
-    } else if (label == 'Study@TUT') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const IdentityCheckpointScreen()),
-      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('You selected $label'),
+          content: Text('$label feature coming soon'),
           backgroundColor: const Color(0xFF005496),
+          duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
