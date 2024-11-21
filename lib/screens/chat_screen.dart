@@ -89,6 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         backgroundColor: const Color(0xFF005496),
+        foregroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),

@@ -12,6 +12,7 @@ class StudyAtTutScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Study@TUT'),
         backgroundColor: const Color(0xFF005496),
+        foregroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
