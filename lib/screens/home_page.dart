@@ -5,7 +5,7 @@ import '../widgets/top_bar.dart';
 import '../widgets/animated_text.dart';
 import '../widgets/inactivity_dialog.dart';
 import 'chat_screen.dart';
-import 'study_at_tut_screen.dart'; // Import the new screen
+import 'identity_checkpoint_screen.dart'; // Import the new screen
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -170,7 +170,7 @@ class _HomePageState extends State<HomePage> {
     } else if (label == 'Study@TUT') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const StudyAtTutScreen()),
+        MaterialPageRoute(builder: (context) => const IdentityCheckpointScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

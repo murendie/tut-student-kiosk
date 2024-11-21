@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background Shield -->
+    <path d="M256 40L448 120V280C448 408 368 460 256 496C144 460 64 408 64 280V120L256 40Z" fill="#E3F2FD" stroke="#005496" stroke-width="16"/>
+    
+    <!-- Lock Body -->
+    <rect x="176" y="216" width="160" height="160" rx="16" fill="#005496"/>
+    
+    <!-- Lock Shackle -->
+    <path d="M320 216V168C320 123.8 284.2 88 240 88C195.8 88 160 123.8 160 168V216" stroke="#005496" stroke-width="32" stroke-linecap="round"/>
+    
+    <!-- Key Hole -->
+    <circle cx="256" cy="296" r="24" fill="#E3F2FD"/>
+    <rect x="252" y="296" width="8" height="40" fill="#E3F2FD"/>
+    
+    <!-- Stars -->
+    <circle cx="144" cy="120" r="8" fill="#005496"/>
+    <circle cx="368" cy="120" r="8" fill="#005496"/>
+    <circle cx="256" cy="88" r="8" fill="#005496"/>
+    <circle cx="200" cy="104" r="6" fill="#005496"/>
+    <circle cx="312" cy="104" r="6" fill="#005496"/>
+</svg>
