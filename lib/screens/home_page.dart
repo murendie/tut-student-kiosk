@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/grid_item.dart';
 import '../widgets/top_bar.dart';
+import '../widgets/animated_text.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -22,36 +23,21 @@ class HomePage extends StatelessWidget {
                       const SizedBox(height: 20),
                       const Column(
                         children: [
-                          Text(
-                            'Welcome to TUT Kiosk',
+                          AnimatedWelcomeText(
+                            text: 'Welcome to TUT Kiosk',
                             style: TextStyle(
                               fontSize: 42,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF005496),
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black12,
-                                  blurRadius: 4,
-                                  offset: Offset(1, 1),
-                                ),
-                              ],
                             ),
-                            textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 20),
                           Text(
                             'What would you like to do?',
                             style: TextStyle(
-                              fontSize: 32,
+                              fontSize: 28,
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF666666),
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black12,
-                                  blurRadius: 2,
-                                  offset: Offset(1, 1),
-                                ),
-                              ],
                             ),
                             textAlign: TextAlign.center,
                           ),

@@ -1,14 +1,51 @@
 # TUT Student Kiosk Application
 
-A modern and interactive kiosk application for TUT students.
+A modern and interactive kiosk application for TUT students, featuring animated interfaces and an intuitive navigation system.
+
+## Latest Updates
+
+### Visual Enhancements
+- Added letter-by-letter animation to the welcome text
+- Implemented spinning globe animation on the splash screen
+- Refined text sizes and removed shadows for cleaner appearance
+- Changed Wayfinder button color to sea green (#2E8B57)
+
+### Layout Improvements
+- Repositioned logo to top of splash screen
+- Added responsive grid layout for main menu
+- Optimized button spacing and sizing
+- Improved overall visual hierarchy
 
 ## Features
 
-- Interactive splash screen with animations
-- Modern UI with smooth transitions
-- Grid-based menu system
-- Consistent color scheme using TUT brand colors
-- Responsive design for various screen sizes
+### Splash Screen
+- Static logo at the top
+- Animated spinning globe in the center
+- Smooth "Touch to Start" fade animation
+- Clean black background for contrast
+
+### Main Menu
+- Animated "Welcome to TUT Kiosk" text (letter-by-letter animation)
+- Streamlined secondary text "What would you like to do?"
+- Four main options in a responsive grid:
+  - EduBot (Yellow: #F9BC0A)
+  - Study@TUT (Red: #E41936)
+  - Pay (Blue: #005496)
+  - Wayfinder (Sea Green: #2E8B57)
+
+### Animations
+1. Welcome Text Animation:
+   - Individual letter scaling
+   - Sequential animation with 50ms delays
+   - Smooth fade in/out effects
+   - Continuous loop with proper timing
+   - Elastic animation curve for natural feel
+
+2. Splash Screen Globe:
+   - Continuous spinning animation
+   - Pulsing grid overlay
+   - Subtle glow effect
+   - Responsive sizing
 
 ## Project Structure
 
@@ -16,19 +53,20 @@ A modern and interactive kiosk application for TUT students.
 tut-student-kiosk/
 ├── lib/
 │   ├── screens/
-│   │   ├── splash_screen.dart
-│   │   └── home_page.dart
+│   │   ├── splash_screen.dart  # Splash screen with globe animation
+│   │   └── home_page.dart      # Main menu with animated welcome
 │   ├── widgets/
-│   │   ├── grid_item.dart
-│   │   └── top_bar.dart
-│   └── main.dart
+│   │   ├── animated_text.dart  # Custom letter animation widget
+│   │   ├── grid_item.dart      # Responsive grid items
+│   │   └── top_bar.dart        # Application top bar
+│   └── main.dart               # Application entry point
 ├── images/
-│   ├── logo_top.png
-│   └── logo_nav.png
+│   ├── logo_top.png           # Main logo for splash screen
+│   └── logo_nav.png           # Navigation bar logo
 ├── fonts/
 │   ├── Ruda-Regular.ttf
 │   └── Ruda-Bold.ttf
-└── pubspec.yaml
+└── pubspec.yaml               # Project configuration
 ```
 
 ## Setup Instructions
@@ -46,14 +84,15 @@ tut-student-kiosk/
 - Primary Blue: #005496
 - Secondary Red: #E41936
 - Accent Yellow: #F9BC0A
+- Wayfinder Green: #2E8B57
 - Background: #F6F9FF
-- White: #FFFFFF
-- Black: #000000
+- Text Grey: #666666
 
 ## Dependencies
 
 - Flutter SDK: >=3.0.0 <4.0.0
 - cupertino_icons: ^1.0.2
+- flutter_spinkit: ^5.2.0 (for globe animation)
 
 ## Development
 

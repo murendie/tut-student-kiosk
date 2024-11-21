@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'home_page.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,7 +13,6 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -23,9 +23,6 @@ class _SplashScreenState extends State<SplashScreen>
     )..repeat(reverse: true);
 
     _animation = Tween<double>(begin: 0.2, end: 1.0)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
@@ -54,29 +51,61 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           );
         },
-        child: Stack(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 50.0),
-                      child: Image.asset(
-                        'images/logo_top.png',
-                        width: 400,
-                      ),
-                    ),
-                  ),
-                ],
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Logo at the top
+              Padding(
+                padding: const EdgeInsets.only(top: 40.0),
+                child: Image.asset(
+                  'images/logo_top.png',
+                  width: 400,
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
+              
+              // Spinning Globe in the middle
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Outer glow effect
+                          Container(
+                            width: 220,
+                            height: 220,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF005496).withOpacity(0.3),
+                                  blurRadius: 30,
+                                  spreadRadius: 10,
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Spinning globe
+                          const SpinKitDoubleBounce(
+                            color: Color(0xFF005496),
+                            size: 200.0,
+                          ),
+                          const SpinKitPulsingGrid(
+                            color: Colors.white,
+                            size: 180.0,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              // Touch to Start at the bottom
+              Padding(
+                padding: const EdgeInsets.only(bottom: 40.0),
                 child: FadeTransition(
                   opacity: _animation,
                   child: const Text(
@@ -97,8 +126,8 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
