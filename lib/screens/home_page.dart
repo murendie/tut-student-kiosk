@@ -21,6 +21,7 @@ class HomePage extends StatelessWidget {
                   return Column(
                     children: [
                       const SizedBox(height: 20),
+                      const SizedBox(height: 80), // Added more vertical space
                       const Column(
                         children: [
                           AnimatedWelcomeText(
