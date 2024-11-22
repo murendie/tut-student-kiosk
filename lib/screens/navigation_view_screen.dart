@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 import '../config/maps_config.dart';
 
 class NavigationViewScreen extends StatefulWidget {
@@ -23,158 +25,98 @@ class NavigationViewScreen extends StatefulWidget {
 }
 
 class _NavigationViewScreenState extends State<NavigationViewScreen> {
-  final Completer<GoogleMapController> _controller = Completer();
-  final Set<Marker> _markers = {};
-  final Set<Polyline> _polylines = {};
+  Completer<GoogleMapController> _mapController = Completer();
+  Set<Marker> _markers = {};
+  Set<Polyline> _polylines = {};
+  List<Map<String, dynamic>> _navigationSteps = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+  final Location _locationService = Location();
   List<LatLng> polylineCoordinates = [];
   String distance = '';
   String duration = '';
   bool isLoading = true;
-  List<String> navigationSteps = [];
+  List<Map<String, dynamic>> navigationSteps = [];
   bool _isMapCreated = false;
-  bool _isMapReady = false;
-
-  // Custom map style
-  static const String _mapStyle = '''
-[
-  {
-    "featureType": "all",
-    "elementType": "geometry",
-    "stylers": [{ "color": "#f5f5f5" }]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "off" }]
-  },
-  {
-    "featureType": "poi.business",
-    "stylers": [{ "visibility": "off" }]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "off" }]
-  },
-  {
-    "featureType": "transit",
-    "stylers": [{ "visibility": "off" }]
-  },
-  {
-    "featureType": "landscape",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "off" }]
-  },
-  {
-    "featureType": "administrative",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "off" }]
-  },
-  {
-    "featureType": "poi.school",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#e8f7ff" }
-    ]
-  },
-  {
-    "featureType": "poi.school",
-    "elementType": "labels.text",
-    "stylers": [
-      { "visibility": "on" },
-      { "color": "#005496" }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      { "color": "#ffffff" },
-      { "weight": 1 }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry.stroke",
-    "stylers": [{ "color": "#005496" }]
-  }
-]
-''';
+  bool _isFollowingUser = true;
+  int _currentStepIndex = 0;
+  LocationData? _currentLocation;
+  StreamSubscription<LocationData>? _locationSubscription;
 
   @override
   void initState() {
     super.initState();
-    _addMarkers();
+    _initializeNavigation();
+    _initializeLocation();
   }
 
-  void _addMarkers() {
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('start'),
-        position: widget.startLocation,
-        infoWindow: const InfoWindow(title: 'Kerr Hall W Gym'),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-      ),
-    );
+  Future<void> _initializeNavigation() async {
+    try {
+      await _addMarkers();
+      await _getDirections();
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Failed to load navigation. Please try again.';
+      });
+    }
+  }
 
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('destination'),
-        position: widget.destination,
-        infoWindow: InfoWindow(title: widget.destinationName),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      ),
-    );
+  Future<void> _addMarkers() async {
+    setState(() {
+      _markers = {
+        Marker(
+          markerId: const MarkerId('start'),
+          position: widget.startLocation,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          infoWindow: const InfoWindow(
+            title: 'Start Location',
+            snippet: 'Gencor Community Hall',
+          ),
+        ),
+        Marker(
+          markerId: const MarkerId('destination'),
+          position: widget.destination,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(
+            title: 'Destination',
+            snippet: widget.destinationName,
+          ),
+        ),
+      };
+    });
   }
 
   Future<void> _getDirections() async {
-    if (widget.startLocation.latitude == widget.destination.latitude &&
-        widget.startLocation.longitude == widget.destination.longitude) {
-      setState(() {
-        isLoading = false;
-        distance = '0 m';
-        duration = '0 mins';
-        navigationSteps = ['You are already at the destination.'];
-      });
-      return;
-    }
-
     try {
-      final String url = 'https://maps.googleapis.com/maps/api/directions/json?'
-          'origin=${widget.startLocation.latitude},${widget.startLocation.longitude}'
-          '&destination=${widget.destination.latitude},${widget.destination.longitude}'
-          '&mode=walking'
-          '&key=${MapsConfig.apiKey}';
+      debugPrint('Requesting route between (${widget.startLocation.latitude}, ${widget.startLocation.longitude}) and (${widget.destination.latitude}, ${widget.destination.longitude})');
+      
+      final url = Uri.https('maps.googleapis.com', '/maps/api/directions/json', {
+        'origin': '${widget.startLocation.latitude},${widget.startLocation.longitude}',
+        'destination': '${widget.destination.latitude},${widget.destination.longitude}',
+        'mode': 'walking',
+        'key': MapsConfig.apiKey,
+      });
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(url);
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         
         if (data['status'] == 'OK') {
-          // Get route points
-          final points = _decodePolyline(data['routes'][0]['overview_polyline']['points']);
-          
-          // Get steps for navigation
-          final steps = data['routes'][0]['legs'][0]['steps'] as List;
-          final List<String> instructions = [];
-          for (var step in steps) {
-            String instruction = step['html_instructions'] as String;
-            // Remove HTML tags and clean up the instruction
-            instruction = instruction
-                .replaceAll(RegExp(r'<div[^>]*>'), '\n')
-                .replaceAll(RegExp(r'</div>'), '')
-                .replaceAll(RegExp(r'<[^>]*>'), '')
-                .replaceAll('&nbsp;', ' ')
-                .trim();
-            instructions.add(instruction);
-          }
-          
-          // Get distance and duration
-          final leg = data['routes'][0]['legs'][0];
-          
+          final points = PolylinePoints().decodePolyline(
+            data['routes'][0]['overview_polyline']['points']
+          );
+
+          final polylineCoordinatesList = points
+              .map((point) => LatLng(point.latitude, point.longitude))
+              .toList();
+
           setState(() {
-            polylineCoordinates = points;
+            polylineCoordinates = polylineCoordinatesList;
             _polylines.add(
               Polyline(
                 polylineId: const PolylineId('route'),
@@ -183,187 +125,269 @@ class _NavigationViewScreenState extends State<NavigationViewScreen> {
                 width: 5,
               ),
             );
+
+            // Extract navigation steps
+            final legs = data['routes'][0]['legs'][0];
+            navigationSteps = List<Map<String, dynamic>>.from(
+              legs['steps'].map((step) => {
+                'instruction': step['html_instructions'],
+                'distance': step['distance']['text'],
+                'duration': step['duration']['text'],
+              }),
+            );
             
-            distance = leg['distance']['text'];
-            duration = leg['duration']['text'];
-            navigationSteps = instructions;
-            isLoading = false;
+            distance = legs['distance']['text'];
+            duration = legs['duration']['text'];
+            _isLoading = false;
           });
+
+          _fitMapToRoute(polylineCoordinatesList);
         } else {
-          setState(() {
-            isLoading = false;
-            navigationSteps = ['Unable to find a route to the destination.'];
-          });
+          throw Exception('Directions API error: ${data['status']} - ${data['error_message'] ?? 'Unknown error'}');
         }
       } else {
-        setState(() {
-          isLoading = false;
-          navigationSteps = ['Error: Unable to connect to navigation service.'];
-        });
+        throw Exception('Failed to fetch directions: ${response.statusCode}');
       }
     } catch (e) {
+      debugPrint('Error in _getDirections: $e');
       setState(() {
-        isLoading = false;
-        navigationSteps = ['Error: ${e.toString()}'];
+        _errorMessage = 'Error getting directions: $e';
+        _isLoading = false;
       });
     }
   }
 
-  List<LatLng> _decodePolyline(String encoded) {
-    List<LatLng> points = [];
-    int index = 0, len = encoded.length;
-    int lat = 0, lng = 0;
+  void _fitMapToRoute(List<LatLng> coordinates) {
+    if (coordinates.isEmpty || _mapController == null) return;
 
-    while (index < len) {
-      int b, shift = 0, result = 0;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-      lat += dlat;
+    double minLat = coordinates[0].latitude;
+    double maxLat = coordinates[0].latitude;
+    double minLng = coordinates[0].longitude;
+    double maxLng = coordinates[0].longitude;
 
-      shift = 0;
-      result = 0;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-      lng += dlng;
-
-      points.add(LatLng(lat / 1E5, lng / 1E5));
+    for (var point in coordinates) {
+      minLat = math.min(minLat, point.latitude);
+      maxLat = math.max(maxLat, point.latitude);
+      minLng = math.min(minLng, point.longitude);
+      maxLng = math.max(maxLng, point.longitude);
     }
-    return points;
+
+    _mapController.future.then((controller) {
+      controller.animateCamera(
+        CameraUpdate.newLatLngBounds(
+          LatLngBounds(
+            southwest: LatLng(minLat, minLng),
+            northeast: LatLng(maxLat, maxLng),
+          ),
+          100, // padding
+        ),
+      );
+    });
   }
 
-  void _onMapCreated(GoogleMapController controller) async {
-    if (!_isMapCreated) {
-      await controller.setMapStyle(_mapStyle);
-      _controller.complete(controller);
-      setState(() {
-        _isMapCreated = true;
-        _isMapReady = true;
-      });
-      // Only get directions after map is ready
-      _getDirections();
+  Future<void> _initializeLocation() async {
+    try {
+      bool serviceEnabled = await _locationService.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await _locationService.requestService();
+        if (!serviceEnabled) return;
+      }
+
+      PermissionStatus permissionGranted = await _locationService.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await _locationService.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) return;
+      }
+
+      _locationSubscription = _locationService.onLocationChanged.listen(
+        (LocationData currentLocation) {
+          if (mounted) {
+            setState(() {
+              _currentLocation = currentLocation;
+            });
+            _updateNavigation(currentLocation);
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint('Error initializing location: $e');
     }
+  }
+
+  Future<void> _updateNavigation(LocationData currentLocation) async {
+    if (!mounted || navigationSteps.isEmpty) return;
+
+    // Update user location marker
+    final userMarker = Marker(
+      markerId: const MarkerId('user'),
+      position: LatLng(currentLocation.latitude!, currentLocation.longitude!),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+      rotation: currentLocation.heading ?? 0,
+      flat: true,
+    );
+
+    setState(() {
+      _markers.removeWhere((marker) => marker.markerId.value == 'user');
+      _markers.add(userMarker);
+    });
+
+    // Update camera if following user
+    if (_isFollowingUser) {
+      final controller = await _mapController.future;
+      controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(currentLocation.latitude!, currentLocation.longitude!),
+            zoom: 18,
+            tilt: 45,
+            bearing: currentLocation.heading ?? 0,
+          ),
+        ),
+      );
+    }
+
+    // Check if we've reached the next navigation step
+    if (_currentStepIndex < navigationSteps.length) {
+      final nextStep = navigationSteps[_currentStepIndex];
+      final nextStepLocation = nextStep['location'] as LatLng;
+      
+      final distance = _calculateDistance(
+        currentLocation.latitude!,
+        currentLocation.longitude!,
+        nextStepLocation.latitude,
+        nextStepLocation.longitude,
+      );
+
+      // If within 10 meters of the next step
+      if (distance <= 10) {
+        setState(() {
+          _currentStepIndex++;
+        });
+      }
+    }
+  }
+
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const double earthRadius = 6371000; // meters
+    final double dLat = _toRadians(lat2 - lat1);
+    final double dLon = _toRadians(lon2 - lon1);
+    final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_toRadians(lat1)) * math.cos(_toRadians(lat2)) *
+        math.sin(dLon / 2) * math.sin(dLon / 2);
+    final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    return earthRadius * c;
+  }
+
+  double _toRadians(double degree) {
+    return degree * math.pi / 180;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Navigation'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Stack(
-        children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: widget.startLocation,
-              zoom: MapsConfig.defaultZoom,
-              tilt: MapsConfig.defaultTilt,
-              bearing: MapsConfig.defaultBearing,
-            ),
-            markers: _markers,
-            polylines: _polylines,
-            onMapCreated: _onMapCreated,
-            cameraTargetBounds: CameraTargetBounds(
-              LatLngBounds(
-                southwest: const LatLng(MapsConfig.southBound, MapsConfig.westBound),
-                northeast: const LatLng(MapsConfig.northBound, MapsConfig.eastBound),
-              ),
-            ),
+        title: Text('Navigation to ${widget.destinationName}'),
+        backgroundColor: const Color(0xFF005496),
+        actions: [
+          IconButton(
+            icon: Icon(_isFollowingUser ? Icons.gps_fixed : Icons.gps_not_fixed),
+            onPressed: () {
+              setState(() {
+                _isFollowingUser = !_isFollowingUser;
+              });
+            },
           ),
-          if (!isLoading)
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'To: ${widget.destinationName}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                            children: [
-                              const Icon(Icons.directions_walk),
-                              Text(distance),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              const Icon(Icons.access_time),
-                              Text(duration),
-                            ],
-                          ),
-                        ],
-                      ),
-                      if (navigationSteps.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        const Divider(),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Navigation Steps:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          height: 150,
-                          child: ListView.builder(
-                            itemCount: navigationSteps.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('${index + 1}. '),
-                                    Expanded(
-                                      child: Text(
-                                        navigationSteps[index],
-                                        style: const TextStyle(height: 1.3),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          if (isLoading)
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
         ],
       ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 48,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _errorMessage!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.red,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: _initializeNavigation,
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: GoogleMap(
+                        onMapCreated: _mapController.complete,
+                        initialCameraPosition: CameraPosition(
+                          target: widget.startLocation,
+                          zoom: 15,
+                        ),
+                        markers: _markers,
+                        polylines: _polylines,
+                        myLocationEnabled: true,
+                        myLocationButtonEnabled: true,
+                        zoomControlsEnabled: true,
+                        mapType: MapType.normal,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        color: Colors.white,
+                        child: ListView.builder(
+                          itemCount: navigationSteps.length,
+                          itemBuilder: (context, index) {
+                            final step = navigationSteps[index];
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: const Color(0xFF005496),
+                                child: Text(
+                                  '${index + 1}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              title: Text(
+                                step['instruction'],
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text(
+                                '${step['distance']} • ${step['duration']}',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
     );
+  }
+
+  @override
+  void dispose() {
+    _mapController.future.then((controller) => controller.dispose());
+    _locationSubscription?.cancel();
+    super.dispose();
   }
 }

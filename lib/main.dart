@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
+import 'widgets/inactivity_wrapper.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +23,10 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
+      home: const InactivityWrapper(
+        inactivityDuration: Duration(minutes: 2),
+        child: SplashScreen(),
+      ),
     );
   }
 }
