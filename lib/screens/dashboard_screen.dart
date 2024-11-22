@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:marquee/marquee.dart';
 import 'splash_screen.dart';
 import 'academic_calendar_screen.dart';
 import 'wayfinder_screen.dart'; // Import the WayfinderScreen
 import 'exam_timetable_screen.dart'; // Import the ExamTimetableScreen
+import 'student_card_screen.dart';
 import '../widgets/animated_text.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -323,7 +323,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   'Order your student card',
                                   Icons.credit_card,
                                   Colors.purple,
-                                  () {},
+                                  () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => StudentCardScreen(
+                                          studentNumber: studentNumber,
+                                          fullName: studentName,
+                                          course: course,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                                 _buildQuickLinkCard(
                                   'Academic Record',
