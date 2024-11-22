@@ -1,15 +1,100 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:html' as html;
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:ui_web' as ui_web;
 
-class ExamTimetableScreen extends StatelessWidget {
+class ExamTimetableScreen extends StatefulWidget {
   const ExamTimetableScreen({super.key});
 
-  final String _examUrl = 'https://os.tut.ac.za/ExamsLegacy/TimeTable';
+  @override
+  State<ExamTimetableScreen> createState() => _ExamTimetableScreenState();
+}
 
-  Future<void> _launchExamTimetable() async {
-    final Uri url = Uri.parse(_examUrl);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $_examUrl');
+class _ExamTimetableScreenState extends State<ExamTimetableScreen> {
+  final String _examUrl = 'https://os.tut.ac.za/ExamsLegacy/TimeTable';
+  bool _isLoading = true;
+  late final WebViewController _controller;
+  late final String _iframeElementId;
+
+  @override
+  void initState() {
+    super.initState();
+    _iframeElementId = 'exam-timetable-iframe-${DateTime.now().millisecondsSinceEpoch}';
+    
+    if (!kIsWeb) {
+      _initializeWebViewController();
+    } else {
+      _initializeIframe();
+    }
+  }
+
+  void _initializeWebViewController() {
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.white)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) {
+            if (mounted) {
+              setState(() {
+                _isLoading = true;
+              });
+            }
+          },
+          onPageFinished: (String url) {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+              });
+            }
+          },
+          onWebResourceError: (WebResourceError error) {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error loading timetable: ${error.description}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(_examUrl));
+  }
+
+  void _initializeIframe() {
+    // Register view factory for web
+    ui_web.platformViewRegistry.registerViewFactory(
+      _iframeElementId,
+      (int viewId) {
+        final iframe = html.IFrameElement()
+          ..src = _examUrl
+          ..style.border = 'none'
+          ..style.height = '100%'
+          ..style.width = '100%'
+          ..onLoad.listen((event) {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+              });
+            }
+          });
+        return iframe;
+      },
+    );
+  }
+
+  Widget _buildWebView() {
+    if (kIsWeb) {
+      return HtmlElementView(viewType: _iframeElementId);
+    } else {
+      return WebViewWidget(controller: _controller);
     }
   }
 
@@ -25,56 +110,26 @@ class ExamTimetableScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.open_in_new),
-            onPressed: () {
-              _launchExamTimetable();
-            },
-            tooltip: 'Open in new tab',
-          ),
+          if (!kIsWeb)
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                _controller.reload();
+              },
+              tooltip: 'Refresh',
+            ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.calendar_month,
-              size: 80,
-              color: Color(0xFF005496),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'TUT Exam Timetable',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+          _buildWebView(),
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(
                 color: Color(0xFF005496),
               ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'View your exam schedule and venue details',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () {
-                _launchExamTimetable();
-              },
-              icon: const Icon(Icons.open_in_new),
-              label: const Text('Open Exam Timetable'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF005496),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
