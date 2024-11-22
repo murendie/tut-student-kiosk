@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 import 'splash_screen.dart';
 import 'academic_calendar_screen.dart';
+import 'wayfinder_screen.dart'; // Import the WayfinderScreen
+import 'exam_timetable_screen.dart'; // Import the ExamTimetableScreen
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -351,9 +353,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           _buildQuickLinkCard(
                             'Exam Timetable',
                             'Check your exam schedule',
-                            Icons.calendar_today,
-                            Colors.green,
-                            () {},
+                            Icons.schedule,
+                            const Color(0xFFE41936),
+                            () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ExamTimetableScreen(),
+                                ),
+                              );
+                            },
                           ),
                           _buildQuickLinkCard(
                             'Student Card',
@@ -393,11 +402,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 16),
                   _buildInfoCard(
-                    'Academic Calendar',
-                    'Important dates and events',
-                    Icons.calendar_today,
-                    const Color(0xFF7986CB),
-                    () {
+                    title: 'Registration Statement',
+                    description: 'View your registration statement',
+                    icon: Icons.description,
+                    onTap: () {
+                      // TODO: Implement registration statement functionality
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInfoCard(
+                    title: 'Academic Calendar',
+                    description: 'View academic calendar',
+                    icon: Icons.calendar_today,
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -408,29 +425,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 12),
                   _buildInfoCard(
-                    'Registration Statement',
-                    'View and download your registration statement',
-                    Icons.description,
-                    const Color(0xFF7986CB),
-                    () {
-                      // TODO: Implement registration statement functionality
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInfoCard(
-                    'Campus Map',
-                    'Find your way around campus',
-                    Icons.map,
-                    const Color(0xFFFFB74D),
-                    () {
-                      // TODO: Implement campus map functionality
-                    },
+                    title: 'Campus Map',
+                    description: 'Find your way around campus',
+                    icon: Icons.map,
+                    onTap: _handleWayfinderTap,
                   ),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _handleWayfinderTap() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const WayfinderScreen(),
       ),
     );
   }
@@ -537,8 +550,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildInfoCard(
-      String title, String description, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildInfoCard({
+    required String title,
+    required String description,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -546,10 +563,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: color.withOpacity(0.1),
+          backgroundColor: const Color(0xFFFFB74D).withOpacity(0.1),
           child: Icon(
             icon,
-            color: color,
+            color: const Color(0xFFFFB74D),
           ),
         ),
         title: Text(

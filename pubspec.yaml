@@ -15,6 +15,15 @@ dependencies:
   flutter_dotenv: ^5.1.0
   chat_bubbles: ^1.5.0
   marquee: ^2.2.3
+  google_maps_flutter: ^2.5.0
+  flutter_polyline_points: ^2.0.0
+  geolocator: ^10.1.0
+  geocoding: ^2.1.1
+  http: ^1.1.0
+  webview_flutter: ^4.4.2
+  webview_flutter_web: ^0.2.2+3
+  webview_flutter_platform_interface: ^2.6.0
+  url_launcher: ^6.1.14
 
 dev_dependencies:
   flutter_test:
@@ -25,10 +34,17 @@ flutter:
   uses-material-design: true
   
   assets:
+    - assets/images/
+    - assets/
     - images/
+    - images/identity_checkpoint.svg
+    - images/login.svg
+    - images/register.svg
+    - images/forgot_pin.svg
     - images/logo_top.png
     - images/logo.png
-    - images/identity_checkpoint.svg
+    - images/logo_nav.png
+    - images/logo_nav.webp
     - assets/dialogflow_credentials.json
     - .env
     

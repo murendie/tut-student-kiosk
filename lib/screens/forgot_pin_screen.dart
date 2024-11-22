@@ -65,7 +65,7 @@ class _ForgotPinScreenState extends State<ForgotPinScreen> {
             children: [
               const SizedBox(height: 20),
               SvgPicture.asset(
-                'assets/images/forgot_pin.svg',
+                'images/forgot_pin.svg',
                 height: 150,
               ),
               const SizedBox(height: 30),

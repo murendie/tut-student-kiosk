@@ -98,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               const SizedBox(height: 20),
               SvgPicture.asset(
-                'assets/images/register.svg',
+                'images/register.svg',
                 height: 150,
               ),
               const SizedBox(height: 30),

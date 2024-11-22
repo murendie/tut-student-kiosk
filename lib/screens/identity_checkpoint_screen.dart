@@ -27,7 +27,7 @@ class IdentityCheckpointScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               SvgPicture.asset(
-                'assets/images/identity_checkpoint.svg',
+                'images/identity_checkpoint.svg',
                 height: 150,
               ),
               const SizedBox(height: 10),
