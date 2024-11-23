@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import '../models/chat_message.dart';
 import '../services/chat_service.dart';
+import 'infobip_chat_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -16,6 +17,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final ChatService _chatService = ChatService();
   final List<ChatMessage> _messages = [];
   bool _isTyping = false;
+  bool _showInfobipChat = false;
 
   @override
   void initState() {
@@ -73,6 +75,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_showInfobipChat) {
+      return const InfobipChatScreen();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Row(
@@ -94,6 +100,17 @@ class _ChatScreenState extends State<ChatScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          TextButton.icon(
+            icon: const Icon(Icons.swap_horiz, color: Colors.white),
+            label: const Text('Switch to Live Chat', style: TextStyle(color: Colors.white)),
+            onPressed: () {
+              setState(() {
+                _showInfobipChat = true;
+              });
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
