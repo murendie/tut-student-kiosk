@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:html' as html;
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:ui_web' as ui_web;
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ExamTimetableScreen extends StatefulWidget {
   const ExamTimetableScreen({super.key});
@@ -13,89 +10,33 @@ class ExamTimetableScreen extends StatefulWidget {
 }
 
 class _ExamTimetableScreenState extends State<ExamTimetableScreen> {
-  final String _examUrl = 'https://os.tut.ac.za/ExamsLegacy/TimeTable';
-  bool _isLoading = true;
-  late final WebViewController _controller;
-  late final String _iframeElementId;
+  bool _isLoading = false;
+  String _errorMessage = '';
+
+  Future<void> _openExamTimetable() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      const examTimetableUrl = 'https://tut.ac.za/exam-timetable';
+      html.window.open(examTimetableUrl, '_blank');
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to load exam timetable. Please try again later.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _iframeElementId = 'exam-timetable-iframe-${DateTime.now().millisecondsSinceEpoch}';
-    
-    if (!kIsWeb) {
-      _initializeWebViewController();
-    } else {
-      _initializeIframe();
-    }
-  }
-
-  void _initializeWebViewController() {
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.white)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) {
-            if (mounted) {
-              setState(() {
-                _isLoading = true;
-              });
-            }
-          },
-          onPageFinished: (String url) {
-            if (mounted) {
-              setState(() {
-                _isLoading = false;
-              });
-            }
-          },
-          onWebResourceError: (WebResourceError error) {
-            if (mounted) {
-              setState(() {
-                _isLoading = false;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Error loading timetable: ${error.description}'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(_examUrl));
-  }
-
-  void _initializeIframe() {
-    // Register view factory for web
-    ui_web.platformViewRegistry.registerViewFactory(
-      _iframeElementId,
-      (int viewId) {
-        final iframe = html.IFrameElement()
-          ..src = _examUrl
-          ..style.border = 'none'
-          ..style.height = '100%'
-          ..style.width = '100%'
-          ..onLoad.listen((event) {
-            if (mounted) {
-              setState(() {
-                _isLoading = false;
-              });
-            }
-          });
-        return iframe;
-      },
-    );
-  }
-
-  Widget _buildWebView() {
-    if (kIsWeb) {
-      return HtmlElementView(viewType: _iframeElementId);
-    } else {
-      return WebViewWidget(controller: _controller);
-    }
+    _openExamTimetable();
   }
 
   @override
@@ -105,31 +46,51 @@ class _ExamTimetableScreenState extends State<ExamTimetableScreen> {
         title: const Text('Exam Timetable'),
         backgroundColor: const Color(0xFF005496),
         foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          if (!kIsWeb)
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () {
-                _controller.reload();
-              },
-              tooltip: 'Refresh',
-            ),
-        ],
       ),
-      body: Stack(
-        children: [
-          _buildWebView(),
-          if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF005496),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_isLoading)
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF005496)),
               ),
-            ),
-        ],
+            if (_errorMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      _errorMessage,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _openExamTimetable,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF005496),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            if (!_isLoading && _errorMessage.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Exam timetable opened in a new tab. If it didn\'t open, please check your browser\'s pop-up settings.',
+                  style: TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

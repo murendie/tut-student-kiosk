@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:tut_student_kiosk/screens/dashboard_screen.dart';
+import 'package:tut_student_kiosk/screens/payment_screen.dart';
+import 'package:tut_student_kiosk/screens/wayfinder_screen.dart';
 import '../widgets/grid_item.dart';
 import '../widgets/animated_text.dart';
 import '../widgets/inactivity_dialog.dart';
 import 'chat_screen.dart';
-import 'dashboard_screen.dart';
 import 'splash_screen.dart';
-import 'wayfinder_screen.dart';
 
 class HomePage extends StatefulWidget {
   final String studentNumber;
@@ -165,30 +167,50 @@ class _HomePageState extends State<HomePage> {
                                 maxHeight: constraints.maxHeight * 0.7, // Use 70% of available height
                               ),
                               child: GridView.count(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 24.0,
-                                mainAxisSpacing: 24.0,
-                                childAspectRatio: 1.3, // Adjust aspect ratio for better fit
-                                physics: const NeverScrollableScrollPhysics(), // Disable scrolling
                                 shrinkWrap: true,
+                                crossAxisCount: 2,
+                                padding: const EdgeInsets.all(16),
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 16,
                                 children: [
                                   GridItem(
                                     icon: Icons.dashboard,
                                     color: const Color(0xFFE41936),
                                     label: 'Dashboard',
-                                    onTap: () => _showSelection(context, 'Dashboard'),
-                                  ),
-                                  GridItem(
-                                    icon: Icons.smart_toy,
-                                    color: const Color(0xFFF9BC0A),
-                                    label: 'EduBot',
-                                    onTap: () => _showSelection(context, 'EduBot'),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const DashboardScreen(),
+                                        ),
+                                      );
+                                    },
                                   ),
                                   GridItem(
                                     icon: Icons.payment,
                                     color: const Color(0xFF005496),
                                     label: 'Pay',
-                                    onTap: () => _showSelection(context, 'Pay'),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const PaymentScreen(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  GridItem(
+                                    icon: Icons.smart_toy,
+                                    color: const Color(0xFFF9BC0A),
+                                    label: 'EduBot',
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const ChatScreen(),
+                                        ),
+                                      );
+                                    },
                                   ),
                                   GridItem(
                                     icon: Icons.map_rounded,
@@ -298,4 +320,51 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+}
+
+Widget _buildMenuCard(BuildContext context, String title, String subtitle, IconData icon, VoidCallback onTap) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: 40,
+            color: const Color(0xFF005496),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF005496),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF666666),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
