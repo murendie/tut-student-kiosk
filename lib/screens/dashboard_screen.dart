@@ -4,6 +4,9 @@ import 'academic_calendar_screen.dart';
 import 'wayfinder_screen.dart'; // Import the WayfinderScreen
 import 'exam_timetable_screen.dart'; // Import the ExamTimetableScreen
 import 'student_card_screen.dart';
+import 'timetable_screen.dart';
+import 'results_screen.dart';
+import 'registration_statement_screen.dart';
 import '../widgets/animated_text.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -15,9 +18,9 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   // Dummy data for demonstration
-  final String studentName = "John Doe";
+  final String studentName = "Thabo Mokoena";
   final String studentNumber = "219123456";
-  final String course = "Doctor of Philosophy in Computer Science";
+  final String course = "Postgraduate Diploma in Computer Science";
   final List<String> announcements = [
     "Registration for 2024 academic year is now open",
     "Exam results will be released on 15 December 2023",
@@ -37,10 +40,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     {
       'title': 'PGDIP',
       'name': 'Postgraduate Diploma in Computer Science'
-    },
-    {
-      'title': 'MSC',
-      'name': 'Master of Science in Computer Science'
     },
   ];
 
@@ -137,7 +136,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ),
                                   image: const DecorationImage(
                                     image: NetworkImage(
-                                      'https://ui-avatars.com/api/?name=John+Doe&background=random',
+                                      'https://ui-avatars.com/api/?name=Thabo+Mokoena&background=random',
                                     ),
                                     fit: BoxFit.cover,
                                   ),
@@ -149,9 +148,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      studentName,
-                                      style: const TextStyle(
+                                    const Text(
+                                      'Thabo Mokoena',
+                                      style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
@@ -220,50 +219,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 12),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: completedQualifications.map((qual) {
-                                    return Tooltip(
-                                      message: qual['name']!,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 5,
+                                Card(
+                                  elevation: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Academic Achievements',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blue[900],
+                                          ),
                                         ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(20),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(0.1),
-                                              blurRadius: 4,
-                                              offset: const Offset(0, 2),
-                                            ),
-                                          ],
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          'Current Average: 75%',
+                                          style: const TextStyle(fontSize: 16),
                                         ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                              Icons.school,
-                                              size: 16,
-                                              color: Color(0xFF005496),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              qual['title']!,
-                                              style: const TextStyle(
-                                                color: Color(0xFF005496),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ],
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          'Academic Standing: Good Standing',
+                                          style: const TextStyle(fontSize: 16),
                                         ),
-                                      ),
-                                    );
-                                  }).toList(),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -298,11 +281,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               childAspectRatio: 1.2,
                               children: [
                                 _buildQuickLinkCard(
-                                  'Outstanding Fees',
-                                  'View and pay your fees',
-                                  Icons.account_balance_wallet,
-                                  Colors.orange,
-                                  () {},
+                                  'Timetable',
+                                  'View your class schedule',
+                                  Icons.calendar_today,
+                                  Colors.blue,
+                                  () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const TimetableScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                _buildQuickLinkCard(
+                                  'Results',
+                                  'Check your academic results',
+                                  Icons.assessment,
+                                  Colors.green,
+                                  () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const ResultsScreen(),
+                                      ),
+                                    );
+                                  },
                                 ),
                                 _buildQuickLinkCard(
                                   'Exam Timetable',
@@ -336,13 +340,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     );
                                   },
                                 ),
-                                _buildQuickLinkCard(
-                                  'Academic Record',
-                                  'View your results',
-                                  Icons.school,
-                                  Colors.blue,
-                                  () {},
-                                ),
                               ],
                             );
                           },
@@ -370,7 +367,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           description: 'View your registration statement',
                           icon: Icons.description,
                           onTap: () {
-                            // TODO: Implement registration statement functionality
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RegistrationStatementScreen(),
+                              ),
+                            );
                           },
                         ),
                         const SizedBox(height: 12),

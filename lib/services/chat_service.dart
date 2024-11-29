@@ -1,44 +1,45 @@
-import 'dart:async';
 import '../models/chat_message.dart';
 
 class ChatService {
-  // Simulated responses for demo purposes
   final Map<String, String> _demoResponses = {
-    'hello': 'Hello! How can I assist you today?',
-    'hi': 'Hi there! What can I help you with?',
-    'help': 'I can help you with:\n- Course information\n- Registration\n- Student services\n- Campus facilities\nWhat would you like to know more about?',
-    'course': 'We offer various courses across different faculties. Which faculty are you interested in?',
-    'registration': 'For registration, you\'ll need:\n1. ID Document\n2. Academic Records\n3. Proof of Address\nWould you like to start the registration process?',
-    'campus': 'Our main campus is located at 1 Aubrey Matlakala St, Soshanguve - K, Soshanguve, 0001. We also have satellite campuses. Which campus would you like to know more about?',
-    'contact': 'You can contact us at:\nEmail: info@tut.ac.za\nPhone: 012 382 5911\nOr visit our website: www.tut.ac.za',
-    'fees': 'Tuition fees vary by course. Would you like to:\n1. Calculate your fees\n2. View payment methods\n3. Check payment deadlines',
-    'default': 'I\'m not sure about that. Could you please rephrase your question or choose from the available options?'
+    'hello': 'Hello! I\'m EduBot, your TUT virtual assistant. How can I help you today?',
+    'hi': 'Hi there! How can I assist you today?',
+    'help': 'I can help you with:\n- Course information\n- Campus facilities\n- Student services\n- Registration\n- Financial aid\n- Academic calendar\nWhat would you like to know more about?',
+    'courses': 'TUT offers various courses across different faculties including:\n- Engineering\n- Information Technology\n- Business\n- Science\n- Arts\nWhich faculty interests you?',
+    'facilities': 'Our campus facilities include:\n- Library\n- Computer labs\n- Sports facilities\n- Student center\n- Health clinic\n- Study areas\nWhich facility would you like to know more about?',
+    'registration': 'For registration, you\'ll need:\n1. Valid ID/Passport\n2. Academic records\n3. Proof of residence\n4. Application fee payment\nWould you like to know more about the registration process?',
+    'fees': 'Tuition fees vary by course. You can:\n- Pay online through student portal\n- Make bank deposits\n- Set up payment plans\nNeed help with a specific payment option?',
+    'financial aid': 'We offer various financial aid options:\n- NSFAS\n- Bursaries\n- Scholarships\n- Study loans\nWould you like details about any specific option?',
+    'contact': 'You can contact us through:\n- Email: info@tut.ac.za\n- Phone: (012) 382-5911\n- Visit our campus\nHow would you like to reach us?',
+    'default': 'I\'m still learning! Could you please rephrase your question or choose from the topics I mentioned earlier?'
   };
 
-  Future<ChatMessage> getBotResponse(String userMessage) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
+  Future<void> initializeDialogflow() async {
+    // No initialization needed for demo mode
+    return;
+  }
+
+  Future<ChatMessage> getBotResponse(String message) async {
+    // Convert message to lowercase for case-insensitive matching
+    String lowerMessage = message.toLowerCase();
     
-    // Convert user message to lowercase for matching
-    String lowercaseMessage = userMessage.toLowerCase();
+    // Check for keywords in the message
+    String response = _demoResponses['default']!;
     
-    // Find a matching response or use default
-    String response = 'default';
     for (var key in _demoResponses.keys) {
-      if (lowercaseMessage.contains(key)) {
+      if (lowerMessage.contains(key)) {
         response = _demoResponses[key]!;
         break;
       }
     }
-    
+
     return ChatMessage(
-      text: response == 'default' ? _demoResponses['default']! : response,
+      text: response,
       isUser: false,
     );
   }
 
-  // This method will be implemented later with actual Dialogflow integration
-  Future<void> initializeDialogflow() async {
-    // TODO: Initialize Dialogflow client with credentials from .env
+  void dispose() {
+    // No cleanup needed for demo mode
   }
 }

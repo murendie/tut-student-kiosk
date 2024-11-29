@@ -22,6 +22,11 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeChat();
+  }
+
+  Future<void> _initializeChat() async {
+    await _chatService.initializeDialogflow();
     _addBotMessage('Hello! I\'m EduBot, your TUT virtual assistant. How can I help you today?');
   }
 
