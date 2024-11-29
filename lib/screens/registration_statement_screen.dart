@@ -55,7 +55,7 @@ class RegistrationStatementScreen extends StatelessWidget {
               final studentInfo = {
                 'Student Number': '219123456',
                 'Name': 'Thabo Mokoena',
-                'Course': 'Doctor of Philosophy in Computer Science',
+                'Course': 'Postgraduate Diploma in Computer Science',
                 'Academic Year': '2023',
                 'Registration Status': 'Registered',
               };
@@ -92,7 +92,7 @@ class RegistrationStatementScreen extends StatelessWidget {
                       _buildInfoRow('Name:', 'Thabo Mokoena'),
                       _buildInfoRow(
                         'Course:',
-                        'Doctor of Philosophy in Computer Science',
+                        'Postgraduate Diploma in Computer Science',
                       ),
                       _buildInfoRow('Academic Year:', '2023'),
                       _buildInfoRow('Registration Status:', 'Registered'),
