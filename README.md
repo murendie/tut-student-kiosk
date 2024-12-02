@@ -1,99 +1,94 @@
-# TUT Student Kiosk Application
+This repository contains the source code and resources for an AI-driven interactive touchscreen kiosk designed to enhance student services and navigation on university campuses. The kiosk integrates cutting-edge features like natural language processing (NLP), real-time campus navigation, personalised services, and a modular architecture for scalability. The primary deployment was tailored for Tshwane University of Technology (TUT), but the solution is adaptable for other educational and public service institutions.
 
-A modern and interactive kiosk application for TUT students, featuring animated interfaces and an intuitive navigation system.
+Key Features
+Dynamic Wayfinding
+Provides campus navigation with real-time routing and building information powered by Google Maps API.
 
-## Latest Updates
+Natural Language Processing (NLP)
+Integrates Dialogflow CX and OpenAI GPT for conversational interactions and complex query resolution.
 
-### Visual Enhancements
-- Added letter-by-letter animation to the welcome text
-- Implemented spinning globe animation on the splash screen
-- Refined text sizes and removed shadows for cleaner appearance
-- Changed Wayfinder button color to sea green (#2E8B57)
+Student Services
+Includes personalised timetable management, student card ordering, and academic results display.
 
-### Layout Improvements
-- Repositioned logo to top of splash screen
-- Added responsive grid layout for main menu
-- Optimized button spacing and sizing
-- Improved overall visual hierarchy
+News and Updates
+Displays real-time campus news such as admission deadlines, events, and exam schedules.
 
-## Features
+Administrative Tools
+Facilitates registration assistance, tuition payment workflows, and secure user authentication.
 
-### Splash Screen
-- Static logo at the top
-- Animated spinning globe in the center
-- Smooth "Touch to Start" fade animation
-- Clean black background for contrast
+Scalable Architecture
+Built using Flutter for the frontend and Firebase for backend services to ensure scalability and robust performance.
 
-### Main Menu
-- Animated "Welcome to TUT Kiosk" text (letter-by-letter animation)
-- Streamlined secondary text "What would you like to do?"
-- Four main options in a responsive grid:
-  - EduBot (Yellow: #F9BC0A)
-  - Study@TUT (Red: #E41936)
-  - Pay (Blue: #005496)
-  - Wayfinder (Sea Green: #2E8B57)
+Tech Stack
+Frontend: Flutter
+Backend: Firebase (for authentication, real-time updates, and data storage)
+AI & NLP: Dialogflow CX, OpenAI GPT
+Navigation: Google Maps API
+Programming Language: Dart
+Getting Started
+Prerequisites
+Install Flutter: Flutter Installation Guide
+Obtain API keys for:
+Google Maps API (for navigation services)
+Firebase (for backend integration)
+Dialogflow CX (for NLP capabilities)
+Ensure Dart SDK is installed with Flutter.
+Installation Steps
+Clone this repository:
 
-### Animations
-1. Welcome Text Animation:
-   - Individual letter scaling
-   - Sequential animation with 50ms delays
-   - Smooth fade in/out effects
-   - Continuous loop with proper timing
-   - Elastic animation curve for natural feel
+bash
+Copy code
+git clone https://github.com/<username>/ai-driven-kiosk.git
+cd ai-driven-kiosk
+Install dependencies:
 
-2. Splash Screen Globe:
-   - Continuous spinning animation
-   - Pulsing grid overlay
-   - Subtle glow effect
-   - Responsive sizing
+bash
+Copy code
+flutter pub get
+Configure API keys:
 
-## Project Structure
+Replace placeholders in lib/config/api_keys.dart with your API keys for Google Maps, Firebase, and Dialogflow.
+Run the app:
 
-```
-tut-student-kiosk/
+bash
+Copy code
+flutter run
+Project Structure
+bash
+Copy code
+.
 ├── lib/
-│   ├── screens/
-│   │   ├── splash_screen.dart  # Splash screen with globe animation
-│   │   └── home_page.dart      # Main menu with animated welcome
-│   ├── widgets/
-│   │   ├── animated_text.dart  # Custom letter animation widget
-│   │   ├── grid_item.dart      # Responsive grid items
-│   │   └── top_bar.dart        # Application top bar
-│   └── main.dart               # Application entry point
-├── images/
-│   ├── logo_top.png           # Main logo for splash screen
-│   └── logo_nav.png           # Navigation bar logo
-├── fonts/
-│   ├── Ruda-Regular.ttf
-│   └── Ruda-Bold.ttf
-└── pubspec.yaml               # Project configuration
-```
+│   ├── main.dart           # Entry point
+│   ├── screens/            # UI components
+│   ├── services/           # Backend integration services
+│   ├── widgets/            # Reusable UI components
+│   ├── config/             # API keys and app configurations
+├── assets/
+│   ├── images/             # App assets
+│   ├── data/               # Sample datasets
+├── test/                   # Unit and integration tests
+├── README.md
+How to Contribute
+We welcome contributions to improve this project! Here’s how you can contribute:
 
-## Setup Instructions
-
-1. Make sure you have Flutter installed on your system
-2. Clone this repository
-3. Place the required assets:
-   - Add logo images to the `images/` directory
-   - Add Ruda font files to the `fonts/` directory
-4. Run `flutter pub get` to install dependencies
-5. Run `flutter run` to start the application
-
-## Color Scheme
-
-- Primary Blue: #005496
-- Secondary Red: #E41936
-- Accent Yellow: #F9BC0A
-- Wayfinder Green: #2E8B57
-- Background: #F6F9FF
-- Text Grey: #666666
-
-## Dependencies
-
-- Flutter SDK: >=3.0.0 <4.0.0
-- cupertino_icons: ^1.0.2
-- flutter_spinkit: ^5.2.0 (for globe animation)
-
-## Development
-
-This project follows Flutter best practices and uses Material Design 3 components. The UI is built with a focus on smooth animations and transitions for a better user experience.
+Fork the repository.
+Create a feature branch:
+bash
+Copy code
+git checkout -b feature-name
+Commit your changes:
+bash
+Copy code
+git commit -m "Add new feature"
+Push to your branch:
+bash
+Copy code
+git push origin feature-name
+Open a pull request.
+Future Roadmap
+Multilingual Support: Incorporate additional languages to improve accessibility.
+Scalability Enhancements: Optimise backend to handle concurrent user sessions effectively.
+Predictive Analytics: Add machine learning models for personalised recommendations and usage insights.
+Field Deployment: Extend real-world testing in diverse university environments.
+License
+This project is licensed under the MIT License.
